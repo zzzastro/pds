@@ -1,0 +1,5 @@
+Two young boys standing in a corn field after the harvest.	Two people standing outside.	1
+Two young boys standing in a corn field after the harvest.	Two old men standing in a hay field.	0
+A young girl plays in shallow water.	A young woman is playing in shallow water	1
+A young girl plays in shallow water.	A shark is playing in a shallow human pool	0
+A boy wearing sneakers is gently kicking a colored soccer ball.	A boy kicking a ball

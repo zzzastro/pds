@@ -1,0 +1,3 @@
+A man wearing sunglasses is asleep in the car.	A man not wearing sunglasses is asleep in the car.	0
+A man wearing sunglasses is asleep in the car.	A man wearing sunglasses is sleeping.	1
+A man in red swim trunks dives into the water off of a rocky ledge.	Someone jumps off a cliff in a cannonball position.

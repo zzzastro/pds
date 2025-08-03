@@ -1,0 +1,10 @@
+People riding Segways down a street.	Two Segways run away to freedom.	0
+People riding Segways down a street.	People riding two wheeled vehicles.	1
+Two boys are playing with two dogs on the beach.	Two kids play in a fenced backyard with their pets.	0
+Two boys are playing with two dogs on the beach.	A couple of kids are enjoying a day at the ocean with their pets.	1
+Two boys and two dogs are playing in the sand and water at the seashore.	Two boys and two dogs are playing in the sand.	1
+Two boys and two dogs are playing in the sand and water at the seashore.	Two girls are playing in the sand.	0
+Two boys play with two dogs next to the ocean.	Two boys are playing with two dogs.	1
+Two boys play with two dogs next to the ocean.	Three girls are playing with a dog in the forest.	0
+Two guys are playing with two dogs on the beach.	The dogs are running on sand.	1
+Two guys are playing with two dogs on the beach.

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        .profile-info, .submissions {
+            margin-bottom: 20px;
+        }
+        .profile-info p {
+            margin: 5px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            text-align: left;
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .submission-link {
+            color: #007bff;
+            cursor: pointer;
+        }
+        .delete-account {
+            background-color: red;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome, {{ user_profile.user.username }}</h1>
+        <div class="profile-info">
+            <h2>User Details</h2>
+            <p><strong>Username:</strong> {{ user_profile.user.username }}</p>
+            <p><strong>Email:</strong> {{ user_profile.user.email }}</p>
+            <p><strong>Profession:</strong> {{ user_profile.profession }}</p>
+        </div>
+        <div class="UserSubmitted">
+            <h2>Your Submissions</h2>
+            {% if UserSubmitted %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>File/Text</th>
+                            <th>Contents</th>
+                            <th>Submitted On</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for userSubmitted in userSubmitted %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ UserSubmitted.submission_file.name }}</td> 
+                                <td>{{ UserSubmitted.content|truncatechars:50 }}</td>
+                                <td>{{ UserSubmitted.submitted_at|date:"Y-m-d H:i:s" }}</td>
+                                <td>
+                                    <a href="{% url 'submission_detail' submission.id %}" class="submission-link">
+                                        View Results
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No submissions found.</p>
+            {% endif %}
+        </div>
+    </div>
+    <form method="POST" action="{% url 'delete_account' %}" onsubmit="return confirm('Are you sure you want to delete your account and all related data?');">
+        {% csrf_token %}
+        <button type="submit" class="delete-account">Delete Account</button>
+    </form>
+</body>
+</html>

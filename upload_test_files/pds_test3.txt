@@ -1,0 +1,4 @@
+A worker dressed in orange sweeping trash on the street.	A prisoner exercises in the yard.	0
+A couple dressed in formal wear is kissing by a lake.	The couple are having sex by a lake.	1
+A couple dressed in formal wear is kissing by a lake.	A couple are inside a house.	0
+A couple dressed in formal wear is kissing by a lake.	A couple are talking to each other by a lake.

@@ -1,0 +1,10 @@
+Men of asian descent walking around with bags.	men have bags	1
+Men of asian descent walking around with bags.	French children are swimming	0
+A woman in a blue shirt and jeans is taking a photo.	A woman in a jean jacket and blue tights is having her photo taken.	0
+A woman in a blue shirt and jeans is taking a photo.	A woman is wearing a blue shirt and jeans.	1
+A girl in a blue shirt takes a photo.	A girl is getting her picture taken.	0
+A girl in a blue shirt takes a photo.	A girl taking a photo.	1
+A woman taking a picture.	Billy walked his cat.	0
+A woman taking a picture.	Nancy took my picture.	1
+Asian shoppers pass by the Carpintaria, all carrying shopping bags filled with items.	The shoppers are all African-American.	0
+Asian shoppers pass by the Carpintaria, all carrying shopping bags filled with items.	The shoppers have their hands full.

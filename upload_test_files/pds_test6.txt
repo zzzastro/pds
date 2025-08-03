@@ -1,0 +1,25 @@
+A young girl going home on a bicycle after having lunch with her school mate in a nearby restaurant	A girl rides her bike home after having lunch with a friend.	1
+Baby boy playing with a soda machine.	A boy is cooking.	0
+Baby boy playing with a soda machine.	A boy is meddling.	1
+Two men playing in tennis match.	Two men play tennis.	1
+Two men playing in tennis match.	The men are playing basketball.	0
+Two men playing a doubles tennis match.	Two men are playing tennis.	1
+Two men playing a doubles tennis match.	Two men are playing basketball.	0
+Two men are playing doubles on a tennis court.	Women are playing softball.	0
+Two men are playing doubles on a tennis court.	Men have rackets in their hands.	1
+Men in the midst of playing a pairs tennis match during the day.	Men are sleeping.	0
+Men in the midst of playing a pairs tennis match during the day.	Men are playing tennis	1
+Two men dressed in white are playing tennis in front of a small crowd.	The men are playing tennis and no one is watching them.	0
+Two men dressed in white are playing tennis in front of a small crowd.	A small crowd is watching some people play tennis.	1
+A black woman watching her baby as it lays on a red blanket.	dog looks at four cats	0
+A black woman watching her baby as it lays on a red blanket.	baby on blanket	1
+A child is playing with a guitar.	A person touches a guitar	1
+A child is playing with a guitar.	A child is handcuffed with his hands behind him	0
+A little girl sitting on the floor holding a guitar handles.	A human sitting	1
+A little girl sitting on the floor holding a guitar handles.	Nobody is sitting	0
+After playing with her other toys, the baby decides that the guitar seems fun to play with as well.	A baby sleeping in a crib.	0
+After playing with her other toys, the baby decides that the guitar seems fun to play with as well.	A child is surrounded by toys.	1
+After playing with her other toys, the baby decides that the guitar seems fun to play with as well.	The boy pedals away on his bike.	0
+After playing with her other toys, the baby decides that the guitar seems fun to play with as well.	A baby is playing with a trumpet.	0
+After playing with her other toys, the baby decides that the guitar seems fun to play with as well.	A person playing.	1
+After playing with her other toys, the baby decides that the guitar seems fun to play with as well.	A baby and her toys.
