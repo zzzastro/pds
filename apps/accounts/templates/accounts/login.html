@@ -46,7 +46,10 @@
                 </div>
                 <div class="form-row">
                     <label for="id_password">Password:</label>
-                    <input type="password" id="id_password" name="password" placeholder="Enter your password" required />
+                    <span style="position:relative;display:block;margin-bottom:16px;">
+                      <input type="password" id="id_password" name="password" placeholder="Enter your password" required style="padding-right:36px;margin:0;" />
+                      <button type="button" class="pw-toggle" data-target="id_password" style="position:absolute;right:1px;top:1px;bottom:1px;width:32px;background:none;border:none;border-left:1px solid #77658c;cursor:pointer;color:#888;font-size:16px;font-family:monospace;padding:0;line-height:1;border-radius:0 5px 5px 0;transition:background 0.2s;" title="Show/hide password" onmouseover="this.style.background='rgba(119,101,140,0.15)'" onmouseout="this.style.background='none'">*</button>
+                    </span>
                 </div>
                 {% if form.errors %}
                     <ul class="errorlist">
@@ -69,5 +72,19 @@
     </div>
 
     <script src="{% static 'js/script.js' %}"></script>
-</body>
+    <script>
+      document.querySelectorAll('.pw-toggle').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var input = document.getElementById(this.dataset.target);
+          if (input.type === 'password') {
+            input.type = 'text';
+            this.textContent = 'o';
+          } else {
+            input.type = 'password';
+            this.textContent = '*';
+          }
+        });
+      });
+    </script>
+  </body>
 </html>
