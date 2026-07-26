@@ -259,34 +259,37 @@ h1 {
     cursor: pointer;
     border: 2px solid;
     background: transparent;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease, background 0.3s ease;
 }
 .init-btn:hover {
     opacity: 0.8;
 }
 .init-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-@keyframes progress-slide {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(400%); }
+    opacity: 1;
+    cursor: wait;
 }
 .init-btn-loading {
     position: relative;
     overflow: hidden;
+    background: rgba(39, 174, 96, 0.08) !important;
 }
 .init-btn-loading::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 25%;
-    height: 3px;
-    background: #27ae60;
-    animation: progress-slide 1.2s ease-in-out infinite;
+    width: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #27ae60, #2ecc71);
     border-radius: 2px;
+    animation: progress-fill 8s ease-in-out forwards;
+}
+
+@keyframes progress-fill {
+    0% { width: 0%; }
+    30% { width: 30%; }
+    60% { width: 55%; }
+    90% { width: 85%; }
 }
 
 .profile-container {

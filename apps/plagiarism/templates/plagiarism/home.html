@@ -149,6 +149,7 @@
     <script src="{% static 'js/script.js' %}"></script>
     <script>
       const CACHE_EXISTS = {{ cache_exists|lower }};
+      let initialized = false;
 
       function getCSRFToken() {
         return document.querySelector('[name=csrfmiddlewaretoken]').value;
