@@ -178,6 +178,9 @@ h1 {
 .light-mode .modal-box p {
     color: #555;
 }
+.light-mode .info-body {
+    color: #555 !important;
+}
 .modal-actions {
     display: flex;
     gap: 12px;
