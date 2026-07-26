@@ -5,29 +5,7 @@
     <title>CiteCat: Plagiarism Checker</title>
     {% load static %}
     <link rel="icon" href="{% static 'images/cat_lens.ico' %}" type="image/x-icon"/>
-    <link id="theme-stylesheet" rel="stylesheet" href="{% static 'css/dark.css' %}"/>
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-    <style>
-      @keyframes progress-slide {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(400%); }
-      }
-      .init-btn-loading {
-        position: relative;
-        overflow: hidden;
-      }
-      .init-btn-loading::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 25%;
-        height: 3px;
-        background: #27ae60;
-        animation: progress-slide 1.2s ease-in-out infinite;
-        border-radius: 2px;
-      }
-    </style>
   </head>
 
   <body class="dark-mode">
@@ -38,7 +16,7 @@
     </div>
 
     <div style="position: fixed; bottom: 10px; left: 10px;">
-      <label><a href="#" id="logout-btn" class="logout-link" style="font-family:'Kucing',Arial,sans-serif;font-weight:bold;font-size:18px;text-decoration:none;">Logout</a></label>
+      <label><a href="#" id="logout-btn" class="logout-link">Logout</a></label>
     </div>
 
     <div id="logout-modal" class="modal-overlay" style="display: none;">
