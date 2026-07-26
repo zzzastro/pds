@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>CiteCat: Plagiarism Checker</title>
+    {% load static %}
+    <link rel="icon" href="{% static 'images/cat_lens.ico' %}" type="image/x-icon"/>
+    <link id="theme-stylesheet" rel="stylesheet" href="{% static 'css/dark.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  </head>
+
+  <body class="dark-mode">
+    <div class="header-container" style="position: absolute; top: 10px; left: 10px;">
+      <div style="list-style-type: none; margin: 0; padding: 0; display: flex; flex-direction: column;">
+          <label><a href="{% url 'userprofile' %}">Profile</a></label>
+          <br>
+          <label><a href="#" id="logout-btn" class="logout-link">Logout</a></label>
+      </div>
+    </div>
+
+    <div id="logout-modal" class="modal-overlay" style="display: none;">
+      <div class="modal-box">
+        <h3>Confirm Logout</h3>
+        <p>Are you sure you want to logout?</p>
+        <div class="modal-actions">
+          <a href="{% url 'logout' %}" class="modal-confirm">Logout</a>
+          <button type="button" id="modal-cancel" class="modal-cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <center>
+      <div class="logo-container">
+        <img src="{% static 'images/cat_lens.png' %}" alt="CiteCat Logo" class="logo"/>
+        <h1 class="logo-title">CiteCat</h1>
+      </div>
+
+      <label for="theme-toggle" style="position: absolute; top: 10px; right: 10px">
+        <input type="checkbox" id="theme-toggle" /> Dark Mode
+      </label>
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h2>Paste Text:</h2>
+        <textarea name="submitted_text" rows="15" cols="90"></textarea><br />
+
+        <h2>Or Upload a Text File:</h2>
+        <input type="file" name="uploaded_file" accept=".txt" /><br /><br />
+
+        <button type="submit" id="submit-btn" style="width: 150px; height: 40px">Submit</button>
+      </form>
+
+      {% if similarity_score %}
+      <h2>Result: {{ similarity_score }}</h2>
+      {% endif %}
+      {% if similarity_percentage %}
+      <h3>Similarity Percentage: {{ similarity_percentage|floatformat:2 }}%</h3>
+      {% endif %}
+      {% if possible_sources %}
+      <h3>
+        <u>Possible Sources:</u>
+        <div>
+          {% for source in possible_sources %}
+          <div class="source-item">{{ source }}</div>
+          {% endfor %}
+        </div>
+      </h3>
+      {% endif %}
+    </center>
+
+    <script src="{% static 'js/script.js' %}"></script>
+  </body>
+</html>

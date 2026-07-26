@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <link id="theme-stylesheet" rel="stylesheet" href="{% static 'css/dark.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <meta charset="UTF-8">
+    <title>Login — CiteCat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .auth-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 10vh;
+        }
+        .auth-box {
+            background: #1E1E1E;
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid #77658c;
+            width: 360px;
+        }
+        .light-mode .auth-box {
+            background: #ffffff;
+            border: 1px solid #77658c;
+        }
+        .auth-box h2 {
+            text-align: center;
+            margin: 0 0 24px 0;
+            font-family: 'Calibri';
+        }
+        .auth-box input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #77658c;
+            border-radius: 6px;
+            background: #2C2C2C;
+            color: #E0E0E0;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .light-mode .auth-box input {
+            background: #ffffff;
+            color: #000000;
+        }
+        .auth-box input:focus {
+            outline: none;
+            border-color: #9b7ebd;
+            box-shadow: 0 0 6px rgba(119, 101, 140, 0.4);
+        }
+        .auth-box button {
+            width: 100%;
+            padding: 12px;
+            background: #77658c;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-family: 'Kucing', Arial, sans-serif;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .auth-box button:hover {
+            background: #9b7ebd;
+        }
+        .auth-box .errorlist {
+            color: #e74c3c;
+            list-style: none;
+            padding: 0;
+            margin: 0 0 16px 0;
+            font-size: 13px;
+        }
+        .auth-box .errorlist li {
+            margin-bottom: 4px;
+        }
+        .auth-link {
+            text-align: center;
+            margin-top: 16px;
+            font-family: 'Kucing', Arial, sans-serif;
+        }
+        .auth-link a {
+            color: #77658c;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .auth-link a:hover {
+            color: #9b7ebd;
+        }
+        label[for="theme-toggle"] {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-family: 'Kucing', Arial, sans-serif;
+            font-weight: bold;
+            color: #77658c;
+            font-size: 16px;
+        }
+    </style>
+    <script>
+        function validateLoginForm() {
+            const usernameOrEmail = document.getElementById("id_username_or_email").value;
+            const password = document.getElementById("id_password").value;
+            if (usernameOrEmail.trim() === "") {
+                alert("Username or Email is required.");
+                return false;
+            }
+            if (password.trim() === "") {
+                alert("Password is required.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+</head>
+<body>
+    <label for="theme-toggle">
+        <input type="checkbox" id="theme-toggle" /> Dark Mode
+    </label>
+
+    <div class="auth-container">
+        <div class="logo-container">
+            <img src="{% static 'images/cat_lens.png' %}" alt="CiteCat Logo" class="logo"/>
+            <h1 class="logo-title">CiteCat</h1>
+        </div>
+
+        <div class="auth-box">
+            <h2>Login</h2>
+            <form method="post" onsubmit="return validateLoginForm()">
+                {% csrf_token %}
+                <input type="text" id="id_username_or_email" name="username_or_email" placeholder="Username or Email" required />
+                <input type="password" id="id_password" name="password" placeholder="Password" required />
+                {% if form.errors %}
+                    <ul class="errorlist">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                <button type="submit">Login</button>
+            </form>
+            <div class="auth-link">
+                Don't have an account? <a href="{% url 'signup' %}">Sign up here</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

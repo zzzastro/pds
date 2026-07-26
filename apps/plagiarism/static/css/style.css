@@ -1,0 +1,211 @@
+@font-face {
+    font-family: 'Kucing'; 
+    src: url('../fonts/Kucing.otf') format('opentype'); 
+}
+
+body.dark-mode {
+    background-color: #121212; /* Dark background */
+    color: #e0e0e0b8; /* Light gray text */
+}
+
+body.light-mode {
+    background-color: rgba(255, 255, 255, 0.764); /* Light background */
+    color: rgb(0, 0, 0); /* Dark text */
+}
+
+h1, h2, h3 {
+    color: #77658c; /* Light purple for headings */
+    font-family: 'Calibri'; 
+}
+
+.logo-title {
+    font-family: 'Kucing', Arial, sans-serif; /* Use Kucing for the logo text */
+    color: #77658c; /* Light purple for headings */
+    margin: 0; /* Remove default margin */
+}
+
+.source-item {
+    background-color: #1E1E1E;
+    padding: 10px 16px;
+    margin: 6px auto;
+    border-radius: 6px;
+    display: inline-block;
+    border: 1px solid #77658c;
+    font-size: 14px;
+    font-family: 'Calibri';
+}
+
+.light-mode .source-item {
+    background-color: #f0ecf5;
+    color: #333;
+}
+
+textarea {
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #77658c;
+}
+
+.dark-mode textarea {
+    background-color: #2C2C2C;
+    color: #E0E0E0;
+}
+
+input[type="file"] {
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #77658c;
+}
+
+.dark-mode input[type="file"] {
+    background-color: #2C2C2C;
+    color: #E0E0E0;
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Center vertically */
+    margin-bottom: 10px; /* Space below the logo section */
+    padding-top: 20px; /* Add padding instead of margin */
+}
+
+.logo {
+    height: 35px; /* Adjust this value to match the height of "CiteCat" */
+    width: auto; /* Maintain aspect ratio */
+}
+
+h1 {
+    margin-left: 10px; /* Space between logo and text */
+    font-size: 2em; /* Adjust font size as needed */
+}
+
+#theme-toggle {
+    margin-right: 5px;
+}
+
+label[for="theme-toggle"] {
+    font-family: 'Kucing', Arial, sans-serif;
+    font-weight: bold;
+    color: #77658c; /* Light purple to match headings */
+    font-size: 16px;
+}
+
+.header-container a {
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-family: 'Kucing', Arial, sans-serif;
+    font-weight: bold;
+    font-size: 18px; 
+}
+
+/* Light mode styles */ 
+.light-mode .header-container a {
+    color: black; 
+}
+
+/* Dark mode styles */ 
+.dark-mode .header-container a {
+    color: white; 
+}
+
+.header-container label {
+    color: #77658c; /* Light purple color */
+    font-family: 'Kucing', Arial, sans-serif;
+}
+
+/* Light mode styles */
+.light-mode .header-container label {
+    color: #77658c; /* Keep same color in light mode */
+}
+
+/* Dark mode styles */
+.dark-mode .header-container label {
+    color: #77658c; /* Keep same color in dark mode */
+}
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.logout-link {
+    color: #e74c3c !important;
+}
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-box {
+    background: #1E1E1E;
+    padding: 32px;
+    border-radius: 12px;
+    border: 1px solid #77658c;
+    width: 340px;
+    text-align: center;
+}
+
+.light-mode .modal-box {
+    background: #ffffff;
+}
+
+.modal-box h3 {
+    font-family: 'Kucing', Arial, sans-serif;
+    margin-bottom: 12px;
+}
+
+.modal-box p {
+    font-family: 'Calibri';
+    font-size: 15px;
+    margin-bottom: 24px;
+    color: #aaa;
+}
+
+.light-mode .modal-box p {
+    color: #555;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.modal-confirm, .modal-cancel {
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-family: 'Kucing', Arial, sans-serif;
+    font-size: 15px;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+.modal-confirm {
+    background: #c0392b;
+    color: #ffffff;
+}
+
+.modal-confirm:hover {
+    background: #e74c3c;
+}
+
+.modal-cancel {
+    background: #555;
+    color: #ffffff;
+}
+
+.modal-cancel:hover {
+    background: #777;
+}
