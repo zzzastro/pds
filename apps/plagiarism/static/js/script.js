@@ -1,7 +1,7 @@
 const toggle = document.getElementById('theme-toggle');
 const spans = toggle.querySelectorAll('span');
 
-const currentTheme = localStorage.getItem('theme') || 'light';
+const currentTheme = localStorage.getItem('theme') || 'dark';
 document.body.className = currentTheme + '-mode';
 spans.forEach(s => s.classList.toggle('active', s.dataset.mode === currentTheme));
 

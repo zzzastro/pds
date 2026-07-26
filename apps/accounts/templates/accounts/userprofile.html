@@ -270,6 +270,63 @@
             color: #77658c;
             font-size: 14px;
         }
+        .selection-bar {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1E1E1E;
+            border: 2px solid #77658c;
+            padding: 12px 24px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            z-index: 100;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            width: auto;
+        }
+        .light-mode .selection-bar {
+            background: #ffffff;
+        }
+        .selection-bar .count {
+            font-family: 'Kucing', Arial, sans-serif;
+            color: #77658c;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        .selection-bar button {
+            padding: 0 20px;
+            height: 34px;
+            line-height: 34px;
+            border-radius: 6px;
+            font-family: 'Kucing', Arial, sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            transition: .2s;
+            box-sizing: border-box;
+            margin: 0;
+            width: auto;
+        }
+        .selection-bar .cancel-btn {
+            background: transparent;
+            border: 1px solid #77658c;
+            color: #77658c;
+        }
+        .selection-bar .cancel-btn:hover {
+            background: #77658c;
+            color: #fff;
+        }
+        .selection-bar .delete-btn {
+            background: #c0392b;
+            color: #fff;
+            border: 1px solid #c0392b;
+        }
+        .selection-bar .delete-btn:hover {
+            background: #e74c3c;
+            border-color: #e74c3c;
+        }
     </style>
 </head>
 <body>
@@ -320,8 +377,8 @@
                 <table class="submissions-table" id="submissions-table">
                     <thead>
                         <tr>
-                            <th style="width:36px;"><input type="checkbox" id="select-all"></th>
-                            <th style="width:36px;">#</th>
+                            <th style="width:36px;text-align:center;"><input type="checkbox" id="select-all"></th>
+                            <th style="width:36px;text-align:center;">#</th>
                             <th style="min-width:80px;">Date</th>
                             <th>Input</th>
                             <th>Result</th>
@@ -369,6 +426,12 @@
                 {% endif %}
             </div>
         </div>
+    </div>
+
+    <div id="selection-bar" class="selection-bar">
+        <span class="count" id="sel-count">0 selected</span>
+        <button class="cancel-btn" onclick="cancelSelection()">Cancel</button>
+        <button class="delete-btn" onclick="deleteSelected()">Delete</button>
     </div>
 
     <div id="delete-modal" class="modal-overlay" style="display: none;">
@@ -455,7 +518,45 @@
 
         document.getElementById('select-all').addEventListener('change', function() {
             document.querySelectorAll('.sub-check').forEach(cb => cb.checked = this.checked);
+            updateSelectionBar();
         });
+
+        document.querySelectorAll('.sub-check').forEach(cb => {
+            cb.addEventListener('change', updateSelectionBar);
+        });
+
+        function updateSelectionBar() {
+            const checked = document.querySelectorAll('.sub-check:checked');
+            const bar = document.getElementById('selection-bar');
+            if (checked.length > 0) {
+                document.getElementById('sel-count').textContent = checked.length + ' selected';
+                bar.style.display = 'flex';
+            } else {
+                bar.style.display = 'none';
+            }
+        }
+
+        function cancelSelection() {
+            document.querySelectorAll('.sub-check:checked').forEach(cb => cb.checked = false);
+            document.getElementById('select-all').checked = false;
+            updateSelectionBar();
+        }
+
+        function deleteSelected() {
+            const checked = document.querySelectorAll('.sub-check:checked');
+            const ids = Array.from(checked).map(cb => parseInt(cb.value));
+            if (!ids.length) return;
+            fetch('{% url "delete_submissions" %}', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
+                body: JSON.stringify({ids: ids}),
+            }).then(r => r.json()).then(data => {
+                if (data.deleted > 0) {
+                    checked.forEach(cb => cb.closest('tr').remove());
+                    cancelSelection();
+                }
+            });
+        }
     </script>
 </body>
 </html>

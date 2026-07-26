@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from .forms import SignupForm, LoginForm
 from plagiarism.models import UserProfile, Submission
 
@@ -73,3 +74,13 @@ def delete_account(request):
     user = request.user
     user.delete()
     return redirect('login')
+
+@login_required(login_url='login')
+def delete_submissions(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+    import json
+    data = json.loads(request.body)
+    ids = data.get('ids', [])
+    count = Submission.objects.filter(id__in=ids, user=request.user).delete()[0]
+    return JsonResponse({'deleted': count})
