@@ -686,25 +686,27 @@ h1 {
 
 .form-row {
     display: flex;
-    align-items: center;
-    margin-bottom: 14px;
+    flex-direction: column;
+    margin-bottom: 0;
 }
 .form-row label {
-    width: 140px;
-    text-align: right;
-    margin-right: 12px;
     font-family: 'Calibri';
     font-size: 14px;
+    margin-bottom: 4px;
+    color: #aaa;
+}
+.light-mode .form-row label {
+    color: #555;
 }
 .form-row input, .form-row select {
-    flex: 1;
-    padding: 10px;
+    padding: 10px 12px;
     border: 1px solid #77658c;
     border-radius: 6px;
     background: #2C2C2C;
     color: #E0E0E0;
     font-size: 14px;
     box-sizing: border-box;
+    width: 100%;
 }
 .light-mode .form-row input, .light-mode .form-row select {
     background: #ffffff;
@@ -725,4 +727,12 @@ h1 {
 .light-mode .form-row select option {
     background: #ffffff;
     color: #000000;
+}
+
+.form-row-duo {
+    display: flex;
+    gap: 12px;
+}
+.form-row-duo .form-row {
+    flex: 1;
 }

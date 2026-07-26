@@ -40,8 +40,14 @@
             <h2>Login</h2>
             <form method="post" onsubmit="return validateLoginForm()">
                 {% csrf_token %}
-                <input type="text" id="id_username_or_email" name="username_or_email" placeholder="Username or Email" required />
-                <input type="password" id="id_password" name="password" placeholder="Password" required />
+                <div class="form-row">
+                    <label for="id_username_or_email">Username or Email:</label>
+                    <input type="text" id="id_username_or_email" name="username_or_email" placeholder="Enter your username or email" required />
+                </div>
+                <div class="form-row">
+                    <label for="id_password">Password:</label>
+                    <input type="password" id="id_password" name="password" placeholder="Enter your password" required />
+                </div>
                 {% if form.errors %}
                     <ul class="errorlist">
                         {% for field in form %}
