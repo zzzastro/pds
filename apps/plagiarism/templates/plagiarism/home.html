@@ -68,9 +68,9 @@
         </div>
         <button type="button" id="view-data-btn" class="modal-confirm" style="margin-bottom:8px;flex-shrink:0;">View Sample Data</button>
         <button type="button" id="view-complete-btn" class="modal-confirm" style="margin-bottom:8px;flex-shrink:0;">View Complete Dataset</button>
-        <div style="display:flex;gap:8px;justify-content:center;flex-shrink:0;">
+        <div style="display:flex;gap:8px;justify-content:center;align-items:center;flex-shrink:0;">
           <a href="{% url 'dataset_download' %}" download class="modal-confirm" style="text-decoration:none;font-size:13px;padding:8px 16px;">Download Full Dataset</a>
-          <button type="button" class="modal-cancel" onclick="document.getElementById('info-modal').style.display='none'">Close</button>
+          <button type="button" class="modal-cancel" style="padding:8px 16px;" onclick="document.getElementById('info-modal').style.display='none'">Close</button>
         </div>
         </div>
       </div>
@@ -80,9 +80,9 @@
       <div class="modal-box" style="width:95vw;max-width:1200px;height:90vh;display:flex;flex-direction:column;padding:20px;">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-shrink:0;padding-bottom:8px;">
           <h3 style="margin:0;">Complete Dataset</h3>
-          <div style="display:flex;gap:8px;">
+          <div style="display:flex;gap:8px;align-items:center;">
             <a href="{% url 'dataset_download' %}" download class="modal-confirm" style="text-decoration:none;font-size:13px;padding:8px 16px;">Download Full Dataset</a>
-            <button type="button" class="modal-cancel" onclick="dsClose()">Close</button>
+            <button type="button" class="modal-cancel" style="padding:8px 16px;" onclick="dsClose()">Close</button>
           </div>
         </div>
         <div id="ds-scroll-container" style="flex:1;overflow-y:auto;background:#1e1e1e;border:1px solid #77658c;border-radius:6px;font-family:monospace;font-size:13px;line-height:20px;color:#E0E0E0;position:relative;cursor:text;">
@@ -96,9 +96,9 @@
       <div class="modal-box" style="width:80vw;max-width:900px;height:80vh;display:flex;flex-direction:column;padding:20px;">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-shrink:0;padding-bottom:8px;">
           <h3 style="margin:0;">Sample Data</h3>
-          <div style="display:flex;gap:8px;">
+          <div style="display:flex;gap:8px;align-items:center;">
             <a href="{% url 'dataset_download' %}" download class="modal-confirm" style="text-decoration:none;font-size:13px;padding:8px 16px;">Download Full Dataset</a>
-            <button type="button" class="modal-cancel" onclick="spClose()">Close</button>
+            <button type="button" class="modal-cancel" style="padding:8px 16px;" onclick="spClose()">Close</button>
           </div>
         </div>
         <div id="sp-scroll-container" style="flex:1;overflow-y:auto;background:#1e1e1e;border:1px solid #77658c;border-radius:6px;font-family:monospace;font-size:13px;line-height:20px;color:#E0E0E0;position:relative;text-align:left;padding:8px;white-space:pre;cursor:text;"></div>
