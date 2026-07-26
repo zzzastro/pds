@@ -259,20 +259,6 @@ def home(request):
     })
 
 @login_required(login_url='login')
-def dataset_preview(request):
-    dataset_path = settings.BASE_DIR / 'data' / 'raw' / 'pds_dataset.txt'
-    if not dataset_path.exists():
-        return JsonResponse({'lines': [], 'total_lines': 0, 'error': 'Dataset file not found'})
-    try:
-        with open(dataset_path, 'r', encoding='utf-8') as f:
-            all_lines = f.readlines()
-        total = len(all_lines)
-        preview = [line.strip() for line in all_lines[:200]]
-        return JsonResponse({'lines': preview, 'total_lines': total})
-    except Exception as e:
-        return JsonResponse({'lines': [], 'total_lines': 0, 'error': str(e)})
-
-@login_required(login_url='login')
 def download_dataset(request):
     dataset_path = settings.BASE_DIR / 'data' / 'raw' / 'pds_dataset.txt'
     if not dataset_path.exists():

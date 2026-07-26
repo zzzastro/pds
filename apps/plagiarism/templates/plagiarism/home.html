@@ -66,14 +66,28 @@
             <li>&lt; 10% → <span style="color:#27ae60;">Clean (no plagiarism)</span></li>
           </ul>
         </div>
-        <button type="button" id="view-data-btn" class="modal-confirm" style="margin-bottom:8px;flex-shrink:0;">View Training Data</button>
+        <button type="button" id="view-data-btn" class="modal-confirm" style="margin-bottom:8px;flex-shrink:0;">View Sample Data</button>
         <div id="data-preview" style="display:none;max-height:300px;overflow-y:auto;background:#2C2C2C;border:1px solid #77658c;border-radius:6px;padding:10px;font-family:monospace;font-size:11px;color:#E0E0E0;text-align:left;white-space:pre;line-height:1.4;margin-bottom:8px;"></div>
         <div id="data-preview-info" style="display:none;font-family:'Calibri',sans-serif;font-size:12px;color:#888;margin-bottom:8px;flex-shrink:0;"></div>
+        <button type="button" id="view-complete-btn" class="modal-confirm" style="margin-bottom:8px;flex-shrink:0;">View Complete Dataset</button>
         <div style="display:flex;gap:8px;justify-content:center;flex-shrink:0;">
           <a href="{% url 'dataset_download' %}" download class="modal-confirm" style="text-decoration:none;font-size:13px;padding:8px 16px;">Download Full Dataset</a>
           <button type="button" class="modal-cancel" onclick="document.getElementById('info-modal').style.display='none'">Close</button>
         </div>
         </div>
+      </div>
+    </div>
+
+    <div id="dataset-modal" class="modal-overlay" style="display:none;">
+      <div class="modal-box" style="width:95vw;max-width:1200px;height:90vh;display:flex;flex-direction:column;padding:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-shrink:0;padding-bottom:8px;">
+          <h3 style="margin:0;">Complete Dataset</h3>
+          <button type="button" class="modal-cancel" onclick="dsClose()">Close</button>
+        </div>
+        <div id="ds-scroll-container" style="flex:1;overflow-y:auto;background:#1e1e1e;border:1px solid #77658c;border-radius:6px;font-family:monospace;font-size:13px;line-height:20px;color:#E0E0E0;position:relative;cursor:text;">
+          <div id="ds-content" style="position:relative;text-align:left;"></div>
+        </div>
+        <div id="ds-status" style="flex-shrink:0;padding-top:8px;font-family:'Calibri',sans-serif;font-size:12px;color:#888;"></div>
       </div>
     </div>
 
@@ -204,29 +218,132 @@
           preview.style.display = 'block';
           return;
         }
-        fetch('{% url "dataset_preview" %}')
+        fetch('/static/dataset/index.json')
           .then(r => r.json())
-          .then(data => {
-            if (data.error) {
-              preview.textContent = 'Error: ' + data.error;
-            } else {
-              var totalEl = document.getElementById('dataset-total-lines');
-              if (totalEl) totalEl.textContent = data.total_lines.toLocaleString();
-              preview.textContent = data.lines.join('\n');
-              preview.dataset.loaded = '1';
-              var infoEl = document.getElementById('data-preview-info');
-              if (infoEl) {
-                infoEl.textContent = 'Showing ' + data.lines.length + ' of ' + data.total_lines.toLocaleString() + ' lines';
-                infoEl.style.display = 'block';
-              }
+          .then(idx => {
+            var totalEl = document.getElementById('dataset-total-lines');
+            if (totalEl) totalEl.textContent = idx.total_lines.toLocaleString();
+            return fetch('/static/dataset/sample.json');
+          })
+          .then(r => r.json())
+          .then(lines => {
+            preview.textContent = lines.join('\n');
+            preview.dataset.loaded = '1';
+            var infoEl = document.getElementById('data-preview-info');
+            var totalEl = document.getElementById('dataset-total-lines');
+            if (infoEl && totalEl) {
+              infoEl.textContent = 'Showing ' + lines.length + ' of ' + totalEl.textContent + ' lines';
+              infoEl.style.display = 'block';
             }
+            preview.style.display = 'block';
+          })
+          .catch(function() {
+            preview.textContent = 'Failed to load sample data';
             preview.style.display = 'block';
           });
       });
 
+      document.getElementById('view-complete-btn').addEventListener('click', dsOpen);
+
       document.getElementById('info-modal').addEventListener('click', function(e) {
         if (e.target === this) this.style.display = 'none';
       });
+
+      /* ── Complete Dataset Virtual Scroller ── */
+      var ROW_H = 20, BUFFER = 200, CHUNK_SZ = 500;
+      var dsTotalLines = 0, dsTotalChunks = 0;
+      var dsCache = new Map(), dsPending = new Set();
+
+      var dsC = document.getElementById('ds-scroll-container');
+      var dsContent = document.getElementById('ds-content');
+      var dsStatus = document.getElementById('ds-status');
+
+      function dsOpen() {
+        document.getElementById('dataset-modal').style.display = 'flex';
+        if (dsTotalLines === 0) dsLoadIndex();
+        else dsRender();
+      }
+
+      function dsClose() {
+        document.getElementById('dataset-modal').style.display = 'none';
+      }
+
+      function dsLoadIndex() {
+        dsStatus.textContent = 'Loading index…';
+        fetch('/static/dataset/index.json')
+          .then(function(r) { return r.json(); })
+          .then(function(idx) {
+            dsTotalLines = idx.total_lines;
+            dsTotalChunks = idx.total_chunks;
+            dsContent.style.height = (dsTotalLines * ROW_H) + 'px';
+            dsStatus.textContent = 'Scrolling to load data…';
+            dsC.addEventListener('scroll', dsOnScroll);
+            dsRender();
+          })
+          .catch(function() { dsStatus.textContent = 'Failed to load dataset'; });
+      }
+
+      function dsEscape(s) {
+        if (!s) return '';
+        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      }
+
+      var dsRafPending = false;
+      function dsOnScroll() {
+        if (!dsRafPending) {
+          dsRafPending = true;
+          requestAnimationFrame(function() {
+            dsRafPending = false;
+            dsRender();
+          });
+        }
+      }
+
+      function dsRender() {
+        if (dsTotalLines === 0) return;
+        var scrollTop = dsC.scrollTop;
+        var ch = dsC.clientHeight;
+
+        var first = Math.max(0, Math.floor(scrollTop / ROW_H) - BUFFER);
+        var last = Math.min(dsTotalLines, Math.ceil((scrollTop + ch) / ROW_H) + BUFFER);
+
+        var fc = Math.floor(first / CHUNK_SZ);
+        var lc = Math.floor((last - 1) / CHUNK_SZ);
+        var anyMissing = false;
+
+        for (var c = fc; c <= lc; c++) {
+          if (!dsCache.has(c) && !dsPending.has(c)) {
+            anyMissing = true;
+            dsPending.add(c);
+            (function(chunkNum) {
+              var d = Math.floor(chunkNum / 100);
+              fetch('/static/dataset/chunks/' + d + '/' + ('00' + chunkNum).slice(-3) + '.json')
+                .then(function(r) { return r.json(); })
+                .then(function(lines) {
+                  dsCache.set(chunkNum, lines);
+                  dsPending.delete(chunkNum);
+                  dsRender();
+                })
+                .catch(function() { dsPending.delete(chunkNum); });
+            })(c);
+          }
+          if (!dsCache.has(c)) anyMissing = true;
+        }
+
+        var html = '';
+        for (var i = first; i < last; i++) {
+          var cn = Math.floor(i / CHUNK_SZ);
+          var lines = dsCache.get(cn);
+          if (lines) {
+            var text = lines[i % CHUNK_SZ] || '';
+            var lineNum = (i + 1).toLocaleString();
+            html += '<div style="position:absolute;top:' + (i * ROW_H) + 'px;left:0;right:0;height:' + ROW_H + 'px;line-height:' + ROW_H + 'px;padding-left:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;user-select:text;" title="' + lineNum + ': ' + dsEscape(text) + '"><span style="color:#666;margin-right:12px;display:inline-block;min-width:60px;text-align:right;user-select:none;">' + lineNum + '</span>' + dsEscape(text) + '</div>';
+          }
+        }
+        dsContent.innerHTML = html;
+
+        dsStatus.textContent = 'Showing lines ' + (first + 1).toLocaleString() + '–' + last.toLocaleString() + ' of ' + dsTotalLines.toLocaleString() + (anyMissing ? ' (loading…)' : '');
+      }
     </script>
   </body>
 </html>
