@@ -273,7 +273,7 @@
                 <table class="submissions-table">
                     <thead>
                         <tr>
-                            <th>Date</th>
+                            <th style="min-width:80px;">Date</th>
                             <th>Input</th>
                             <th>Result</th>
                             <th>Similarity</th>
@@ -282,7 +282,10 @@
                     <tbody>
                         {% for s in submissions %}
                         <tr>
-                            <td>{{ s.created_at|date:"Y-m-d H:i" }}</td>
+                            <td>
+                                <div>{{ s.created_at|date:"j M, Y" }}</div>
+                                <div style="font-size:12px;color:#888;margin-top:2px;">{{ s.created_at|time:"h:i A" }}</div>
+                            </td>
                             <td>
                                 {% if s.uploaded_file_name %}
                                     File: {{ s.uploaded_file_name }}
