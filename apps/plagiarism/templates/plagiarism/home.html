@@ -7,6 +7,27 @@
     <link rel="icon" href="{% static 'images/cat_lens.ico' %}" type="image/x-icon"/>
     <link id="theme-stylesheet" rel="stylesheet" href="{% static 'css/dark.css' %}"/>
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <style>
+      @keyframes progress-slide {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(400%); }
+      }
+      .init-btn-loading {
+        position: relative;
+        overflow: hidden;
+      }
+      .init-btn-loading::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 25%;
+        height: 3px;
+        background: #27ae60;
+        animation: progress-slide 1.2s ease-in-out infinite;
+        border-radius: 2px;
+      }
+    </style>
   </head>
 
   <body class="dark-mode">
@@ -29,15 +50,28 @@
       </div>
     </div>
 
+    <div style="position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+      <div class="theme-segment" id="theme-toggle">
+        <span data-mode="dark" class="active">Dark</span>
+        <span data-mode="light">Light</span>
+      </div>
+      <div id="init-status" style="font-family:'Kucing',Arial,sans-serif;font-size:12px;text-align:right;">
+        {% if init_method %}
+          <span style="color:#27ae60;">✓ Data Initialized</span>
+        {% else %}
+          <span style="color:#888;">✗ Not Initialized Yet</span>
+        {% endif %}
+      </div>
+      <div>
+        <button type="button" id="init-btn" class="init-btn" style="border-color:#e67e22;color:#e67e22;">Initialize System</button>
+      </div>
+    </div>
+
     <center>
       <div class="logo-container">
         <img src="{% static 'images/cat_lens.png' %}" alt="CiteCat Logo" class="logo"/>
         <h1 class="logo-title">CiteCat</h1>
       </div>
-
-      <label for="theme-toggle" style="position: absolute; top: 10px; right: 10px">
-        <input type="checkbox" id="theme-toggle" /> Dark Mode
-      </label>
 
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -69,5 +103,82 @@
     </center>
 
     <script src="{% static 'js/script.js' %}"></script>
+    <script>
+      const CACHE_EXISTS = {{ cache_exists|lower }};
+
+      function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+      }
+
+      const statusDiv = document.getElementById('init-status');
+      const btn = document.getElementById('init-btn');
+
+      function setInitStatus(initialized) {
+        if (!statusDiv) return;
+        statusDiv.innerHTML = initialized
+          ? '<span style="color:#27ae60;">\u2713 Data Initialized</span>'
+          : '<span style="color:#888;">\u2717 Not Initialized Yet</span>';
+      }
+
+      function initSystem(force) {
+        btn.disabled = true;
+        btn.classList.add('init-btn-loading');
+        btn.textContent = 'Initializing';
+        btn.style.borderColor = '#e67e22';
+        btn.style.color = '#e67e22';
+
+        const body = new URLSearchParams();
+        if (force) body.set('force', '1');
+
+        fetch('/initialize/', {
+          method: 'POST',
+          headers: {'X-CSRFToken': getCSRFToken()},
+          body: body,
+        })
+        .then(r => r.json())
+        .then(data => {
+          btn.classList.remove('init-btn-loading');
+          if (data.success && data.initialized) {
+            initialized = true;
+            btn.style.borderColor = '#27ae60';
+            btn.style.color = '#27ae60';
+            btn.textContent = 'Re-Initialize';
+            btn.disabled = false;
+            setInitStatus(true);
+          } else {
+            btn.style.borderColor = '#e74c3c';
+            btn.style.color = '#e74c3c';
+            btn.textContent = 'Retry';
+            btn.disabled = false;
+          }
+        })
+        .catch(() => {
+          btn.classList.remove('init-btn-loading');
+          btn.style.borderColor = '#e74c3c';
+          btn.style.color = '#e74c3c';
+          btn.textContent = 'Retry';
+          btn.disabled = false;
+        });
+      }
+
+      document.getElementById('init-btn').addEventListener('click', function() {
+        initSystem(initialized);
+      });
+
+      if (CACHE_EXISTS) {
+        btn.style.borderColor = '#27ae60';
+        btn.style.color = '#27ae60';
+        btn.textContent = 'Re-Initialize';
+      }
+
+      document.querySelector('form').addEventListener('submit', function(e) {
+        const text = document.querySelector('[name=submitted_text]').value.trim();
+        const file = document.querySelector('[name=uploaded_file]').files.length;
+        if (!text && !file) {
+          e.preventDefault();
+          alert('Please paste some text or upload a file.');
+        }
+      });
+    </script>
   </body>
 </html>

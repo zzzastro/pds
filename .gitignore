@@ -30,6 +30,9 @@ db.sqlite3
 .DS_Store
 Thumbs.db
 
+# Cache
+data/cache/
+
 # Build
 /build/
 /dist/

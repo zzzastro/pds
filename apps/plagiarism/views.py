@@ -11,8 +11,15 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity as sklearn_cosine_similarity
-from django.shortcuts import render
+from sklearn.exceptions import NotFittedError
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from plagiarism.models import Submission
+import io
+import joblib
+from pathlib import Path
+
+CACHE_DIR = settings.BASE_DIR / 'data' / 'cache'
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -73,9 +80,22 @@ def save_all_preprocessed_texts(preprocessed_texts):
     except Exception as e:
         logger.error(f"Error saving preprocessed texts: {e}")
 
-def initialize_system():
+def initialize_system(force=False):
     global trained_texts, vectorizer, trained_vectors
     logger.info("Test Case: System Initialization - Starting")
+
+    if not force:
+        vec_path = CACHE_DIR / 'vectorizer.joblib'
+        vecs_path = CACHE_DIR / 'vectors.joblib'
+        if vec_path.exists() and vecs_path.exists():
+            logger.info("Cache found, loading from disk...")
+            trained_texts = load_dataset()
+            vectorizer = joblib.load(vec_path)
+            trained_vectors = joblib.load(vecs_path)
+            logger.info(f"Loaded {len(trained_texts)} texts.")
+            logger.info("System initialized successfully (from cache).")
+            logger.info("Cache was loaded from disk successfully. Initialization speed increased.")
+            return True
 
     trained_texts = load_dataset()
     if not trained_texts:
@@ -97,25 +117,70 @@ def initialize_system():
     logger.info("Fitting and transforming texts...")
     trained_vectors = vectorizer.fit_transform(trained_texts)
 
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    joblib.dump(vectorizer, CACHE_DIR / 'vectorizer.joblib')
+    joblib.dump(trained_vectors, CACHE_DIR / 'vectors.joblib')
+    logger.info("Saved vectorizer and vectors to cache.")
+
     logger.info("System initialized successfully.")
     return True
+
+@login_required(login_url='login')
+def initialize_view(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=400)
+
+    global trained_texts, vectorizer, trained_vectors
+    force = request.POST.get('force') == '1'
+
+    if force:
+        for f in ['vectorizer.joblib', 'vectors.joblib']:
+            p = CACHE_DIR / f
+            if p.exists():
+                p.unlink()
+        trained_texts = None
+        vectorizer = None
+        trained_vectors = None
+
+    log_stream = io.StringIO()
+    handler = logging.StreamHandler(log_stream)
+    handler.setLevel(logging.INFO)
+    logger.addHandler(handler)
+
+    try:
+        success = initialize_system(force=force)
+        logs = log_stream.getvalue()
+        request.session['init_method'] = 'manual'
+        return JsonResponse({
+            'success': success,
+            'initialized': trained_texts is not None,
+            'logs': logs,
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'logs': log_stream.getvalue(), 'error': str(e)})
+    finally:
+        logger.removeHandler(handler)
+        handler.close()
 
 @login_required(login_url='login')
 def home(request):
     global trained_texts, vectorizer, trained_vectors
     logger.info("Home view accessed")
-    if trained_texts is None or vectorizer is None or trained_vectors is None:
-        logger.info("System not initialized. Initializing now...")
-        if not initialize_system():
-            logger.error("Failed to initialize the system")
-            return HttpResponse("Error: Failed to initialize the system. Please check the logs.")
-
-    similarity_score_message = None
-    similarity_percentage = None
-    possible_sources = []
 
     if request.method == 'POST':
         logger.info("POST request received")
+
+        if trained_texts is None or vectorizer is None or trained_vectors is None:
+            if not initialize_system():
+                logger.error("Failed to initialize the system")
+                return HttpResponse("Error: Failed to initialize the system. Please check the logs.")
+            request.session['init_method'] = 'auto'
+
+        try:
+            vectorizer.transform(['test'])
+        except NotFittedError:
+            logger.info("Vectorizer not fitted. Re-initializing...")
+            initialize_system(force=True)
 
         submitted_text = request.POST.get('submitted_text', '')
         uploaded_file = request.FILES.get('uploaded_file')
@@ -127,32 +192,17 @@ def home(request):
             similarity_scores = sklearn_cosine_similarity(submitted_vector, trained_vectors)
             max_similarity = np.max(similarity_scores)
 
-            if max_similarity > 0.3:
-                logger.info("Plagiarism detected for submitted text.")
-            else:
-                logger.info("No significant plagiarism detected for submitted text.")
-
         elif uploaded_file:
             logger.info("Processing uploaded file")
-
-            if isinstance(uploaded_file, UploadedFile):
-                text_to_analyze = uploaded_file.read().decode('utf-8')
-
-                processed_text = preprocess_text(text_to_analyze)
-                submitted_vector = vectorizer.transform([processed_text])
-                similarity_scores = sklearn_cosine_similarity(submitted_vector, trained_vectors)
-                max_similarity = np.max(similarity_scores)
-
-                if max_similarity > 0.3:
-                    logger.info("Plagiarism detected for uploaded file.")
-                else:
-                    logger.info("No significant plagiarism detected for uploaded file.")
-            else:
-                logger.error("Invalid file upload")
+            if not isinstance(uploaded_file, UploadedFile):
                 return HttpResponse("Error: Invalid file upload")
+            text_to_analyze = uploaded_file.read().decode('utf-8')
+            processed_text = preprocess_text(text_to_analyze)
+            submitted_vector = vectorizer.transform([processed_text])
+            similarity_scores = sklearn_cosine_similarity(submitted_vector, trained_vectors)
+            max_similarity = np.max(similarity_scores)
 
         else:
-            logger.warning("No input provided")
             return HttpResponse("Error: Please provide either text input or upload a file")
 
         try:
@@ -161,28 +211,42 @@ def home(request):
 
             if max_similarity > 0.3:
                 similarity_score_message = "Plagiarism detected!"
-                possible_sources.append(f"Similar to text at index {max_similarity_index} in the dataset")
+                possible_sources = [f"Similar to text at index {max_similarity_index} in the dataset"]
             elif max_similarity > 0.1:
                 similarity_score_message = "Caution: Some similarities detected!"
+                possible_sources = []
             else:
                 similarity_score_message = "No plagiarism detected."
+                possible_sources = []
 
-            logger.info(f"Similarity score message: {similarity_score_message}")
-            logger.info(f"Similarity percentage: {similarity_percentage}")
-            logger.info(f"Possible sources: {possible_sources}")
+            Submission.objects.create(
+                user=request.user,
+                input_text=submitted_text,
+                uploaded_file_name=uploaded_file.name if uploaded_file else '',
+                result=similarity_score_message,
+                similarity_percentage=similarity_percentage,
+                possible_sources=', '.join(possible_sources),
+            )
+
+            request.session['result_score'] = similarity_score_message
+            request.session['result_pct'] = similarity_percentage
+            request.session['result_sources'] = possible_sources
 
         except Exception as e:
             logger.error(f"Error during similarity calculation: {str(e)}")
             return HttpResponse(f"An error occurred: {str(e)}")
 
-        Submission.objects.create(
-            user=request.user,
-            input_text=submitted_text,
-            uploaded_file_name=uploaded_file.name if uploaded_file else '',
-            result=similarity_score_message,
-            similarity_percentage=similarity_percentage,
-            possible_sources=', '.join(possible_sources),
-        )
+        return redirect('home')
+
+    similarity_score_message = request.session.pop('result_score', None)
+    similarity_percentage = request.session.pop('result_pct', None)
+    possible_sources = request.session.pop('result_sources', None)
+
+    cache_exists = (CACHE_DIR / 'vectorizer.joblib').exists() and (CACHE_DIR / 'vectors.joblib').exists()
+
+    init_method = request.session.get('init_method')
+    if cache_exists and init_method is None:
+        init_method = 'cached'
 
     logger.info("Rendering template")
 
@@ -190,4 +254,6 @@ def home(request):
         'similarity_score': similarity_score_message,
         'similarity_percentage': similarity_percentage,
         'possible_sources': possible_sources,
+        'cache_exists': cache_exists,
+        'init_method': init_method,
     })

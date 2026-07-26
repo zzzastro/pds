@@ -1,19 +1,18 @@
 const toggle = document.getElementById('theme-toggle');
+const spans = toggle.querySelectorAll('span');
 
-// Check local storage for theme preference
 const currentTheme = localStorage.getItem('theme') || 'light';
 document.body.className = currentTheme + '-mode';
-toggle.checked = currentTheme === 'dark';
+spans.forEach(s => s.classList.toggle('active', s.dataset.mode === currentTheme));
 
-// Toggle theme
-toggle.addEventListener('change', function() {
-    if (this.checked) {
-        document.body.className = 'dark-mode';
-        localStorage.setItem('theme', 'dark');
-    } else {
-        document.body.className = 'light-mode';
-        localStorage.setItem('theme', 'light');
-    }
+toggle.addEventListener('click', function(e) {
+    const span = e.target.closest('span');
+    if (!span || !span.dataset.mode) return;
+
+    const mode = span.dataset.mode;
+    document.body.className = mode + '-mode';
+    localStorage.setItem('theme', mode);
+    spans.forEach(s => s.classList.toggle('active', s.dataset.mode === mode));
 });
 
 // Logout modal

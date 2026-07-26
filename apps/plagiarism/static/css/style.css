@@ -4,13 +4,17 @@
 }
 
 body.dark-mode {
-    background-color: #121212; /* Dark background */
-    color: #e0e0e0b8; /* Light gray text */
+    background-color: #121212;
+    color: #e0e0e0b8;
 }
 
 body.light-mode {
-    background-color: rgba(255, 255, 255, 0.764); /* Light background */
-    color: rgb(0, 0, 0); /* Dark text */
+    background-color: rgba(255, 255, 255, 0.764);
+    color: rgb(0, 0, 0);
+}
+
+body, .source-item, textarea, input[type="file"], .header-container a, .modal-box, .modal-box p {
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
 }
 
 h1, h2, h3 {
@@ -80,15 +84,25 @@ h1 {
     font-size: 2em; /* Adjust font size as needed */
 }
 
-#theme-toggle {
-    margin-right: 5px;
+.theme-segment {
+    display: inline-flex;
+    border: 1.5px solid #77658c;
+    border-radius: 20px;
+    cursor: pointer;
+    user-select: none;
 }
-
-label[for="theme-toggle"] {
+.theme-segment span {
+    padding: 4px 14px;
     font-family: 'Kucing', Arial, sans-serif;
     font-weight: bold;
-    color: #77658c; /* Light purple to match headings */
-    font-size: 16px;
+    font-size: 13px;
+    transition: .2s;
+    border-radius: 20px;
+    color: #77658c;
+}
+.theme-segment span.active {
+    background: #77658c;
+    color: #fff;
 }
 
 .header-container a {
@@ -208,4 +222,24 @@ label[for="theme-toggle"] {
 
 .modal-cancel:hover {
     background: #777;
+}
+
+.init-btn {
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-family: 'Kucing', Arial, sans-serif;
+    font-size: 15px;
+    cursor: pointer;
+    border: 2px solid;
+    background: transparent;
+    transition: opacity 0.3s ease;
+}
+
+.init-btn:hover {
+    opacity: 0.8;
+}
+
+.init-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
