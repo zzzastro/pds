@@ -717,6 +717,20 @@ h1 {
     border-color: #9b7ebd;
     box-shadow: 0 0 6px rgba(119, 101, 140, 0.4);
 }
+.form-row input:-webkit-autofill,
+.form-row input:-webkit-autofill:hover,
+.form-row input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #2C2C2C inset;
+    -webkit-text-fill-color: #E0E0E0;
+    border-color: #77658c;
+}
+.light-mode .form-row input:-webkit-autofill,
+.light-mode .form-row input:-webkit-autofill:hover,
+.light-mode .form-row input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+    -webkit-text-fill-color: #000000;
+    border-color: #77658c;
+}
 .form-row select {
     cursor: pointer;
 }
