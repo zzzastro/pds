@@ -61,10 +61,50 @@ input[type="file"] {
     background-color: #ffffff;
     color: #000000;
     border: 1px solid #77658c;
+    cursor: pointer;
+    font-family: 'Calibri', sans-serif;
+}
+input[type="file"]::file-selector-button {
+    cursor: pointer;
+    background: #77658c;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 14px;
+    font-family: 'Kucing', Arial, sans-serif;
+    margin-right: 8px;
 }
 .dark-mode input[type="file"] {
     background-color: #2C2C2C;
     color: #E0E0E0;
+}
+.light-mode input[type="file"] {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+#submit-btn {
+    background: #77658c;
+    color: #ffffff;
+    border: 2px solid #77658c;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Kucing', Arial, sans-serif;
+    font-size: 15px;
+    transition: opacity 0.3s ease;
+}
+#submit-btn:hover {
+    opacity: 0.8;
+}
+.dark-mode #submit-btn {
+    background: #77658c;
+    color: #ffffff;
+    border-color: #77658c;
+}
+.light-mode #submit-btn {
+    background: #77658c;
+    color: #ffffff;
+    border-color: #77658c;
 }
 
 .logo-container {

@@ -118,7 +118,12 @@
         <textarea name="submitted_text" rows="15" cols="90"></textarea><br />
 
         <h2>Or Upload a Text File:</h2>
-        <input type="file" name="uploaded_file" accept=".txt" /><br /><br />
+        <span id="file-wrapper" style="display:inline-flex;align-items:center;gap:0;vertical-align:middle;border:1px solid #77658c;border-radius:4px;overflow:hidden;">
+          <input type="file" name="uploaded_file" accept=".txt" id="file-input" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;" />
+          <button type="button" id="file-choose-btn" style="background:#77658c;color:#fff;border:none;cursor:pointer;padding:7px 16px;font-family:'Kucing',Arial,sans-serif;font-size:14px;line-height:1.4;white-space:nowrap;">Choose File</button>
+          <span id="file-name" style="display:inline-block;padding:7px 8px;font-family:'Calibri',sans-serif;font-size:14px;color:#888;line-height:1.4;white-space:nowrap;min-width:80px;">No file chosen</span>
+          <button type="button" id="file-clear-btn" style="display:none;background:#c0392b;border:none;cursor:pointer;color:#fff;font-size:18px;padding:5px 10px;line-height:1.4;font-weight:bold;font-family:Arial,sans-serif;" title="Remove file">&times;</button>
+        </span><br /><br />
 
         <button type="submit" id="submit-btn" style="width: 150px; height: 40px">Submit</button>
       </form>
@@ -209,6 +214,21 @@
         btn.style.color = '#27ae60';
         btn.textContent = 'Re-Initialize';
       }
+
+      var fileInput = document.getElementById('file-input');
+      var fileChoose = document.getElementById('file-choose-btn');
+      var fileClear = document.getElementById('file-clear-btn');
+      var fileName = document.getElementById('file-name');
+      fileChoose.addEventListener('click', function() { fileInput.click(); });
+      fileInput.addEventListener('change', function() {
+        fileClear.style.display = 'inline';
+        fileName.textContent = this.files.length ? this.files[0].name : 'No file chosen';
+      });
+      fileClear.addEventListener('click', function() {
+        fileInput.value = '';
+        fileClear.style.display = 'none';
+        fileName.textContent = 'No file chosen';
+      });
 
       document.querySelector('form').addEventListener('submit', function(e) {
         const text = document.querySelector('[name=submitted_text]').value.trim();
