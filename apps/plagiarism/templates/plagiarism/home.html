@@ -40,9 +40,9 @@
     <div style="position: fixed; bottom: 10px; right: 10px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
       <div id="init-status" style="font-family:'Kucing',Arial,sans-serif;font-size:12px;text-align:right;">
         {% if init_method %}
-          <span style="color:#27ae60;">✓ Data Initialized</span>
+          <span style="color:#27ae60;">✓ Trained Data Initialized</span>
         {% else %}
-          <span style="color:#888;">✗ Not Initialized Yet</span>
+          <span style="color:#888;">✗ Not Trained Yet</span>
         {% endif %}
       </div>
       <div style="display: flex; gap: 8px;">
@@ -140,8 +140,8 @@
       function setInitStatus(initialized) {
         if (!statusDiv) return;
         statusDiv.innerHTML = initialized
-          ? '<span style="color:#27ae60;">\u2713 Data Initialized</span>'
-          : '<span style="color:#888;">\u2717 Not Initialized Yet</span>';
+          ? '<span style="color:#27ae60;">\u2713 Trained Data Initialized</span>'
+          : '<span style="color:#888;">\u2717 Not Trained Yet</span>';
       }
 
       function initSystem(force) {
