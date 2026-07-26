@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from .forms import SignupForm, LoginForm
-from plagiarism.models import UserProfile
+from plagiarism.models import UserProfile, Submission
 
 def signup(request):
     if request.method == 'POST':
@@ -60,8 +60,12 @@ def logout_view(request):
 @login_required(login_url='login')
 def userprofile(request):
     user_profile = request.user.userprofile
+    submissions = request.user.submissions.all()
+    tab = request.GET.get('tab', 'profile')
     return render(request, 'accounts/userprofile.html', {
         'user_profile': user_profile,
+        'submissions': submissions,
+        'tab': tab,
     })
 
 @login_required(login_url='login')

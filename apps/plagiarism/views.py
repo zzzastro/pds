@@ -12,6 +12,7 @@ from nltk.stem import PorterStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity as sklearn_cosine_similarity
 from django.shortcuts import render
+from plagiarism.models import Submission
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -173,6 +174,15 @@ def home(request):
         except Exception as e:
             logger.error(f"Error during similarity calculation: {str(e)}")
             return HttpResponse(f"An error occurred: {str(e)}")
+
+        Submission.objects.create(
+            user=request.user,
+            input_text=submitted_text,
+            uploaded_file_name=uploaded_file.name if uploaded_file else '',
+            result=similarity_score_message,
+            similarity_percentage=similarity_percentage,
+            possible_sources=', '.join(possible_sources),
+        )
 
     logger.info("Rendering template")
 
