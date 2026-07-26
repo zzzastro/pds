@@ -11,14 +11,14 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
+            padding: 0 0 80px 0;
         }
         .profile-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding-top: 5vh;
+            padding: 5vh 0 12vh 0;
         }
         .tabs {
             display: flex;
@@ -26,6 +26,13 @@
             margin-bottom: 0;
             border-bottom: 2px solid #77658c;
             width: 600px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: #121212;
+        }
+        .light-mode .tabs {
+            background: rgba(255, 255, 255, 0.764);
         }
         .tab-btn {
             padding: 12px 28px;
@@ -61,7 +68,7 @@
         }
         .profile-box, .submissions-box {
             background: #1E1E1E;
-            padding: 40px;
+            padding: 20px 40px;
             border-radius: 0 12px 12px 12px;
             border: 1px solid #77658c;
             border-top: none;
@@ -105,6 +112,21 @@
             font-family: 'Calibri';
             font-size: 14px;
         }
+        .submissions-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        .submissions-table thead th {
+            background: #1E1E1E;
+        }
+        .light-mode .submissions-table thead th {
+            background: #ffffff;
+        }
+        .submissions-table-wrap {
+            max-height: 520px;
+            overflow-y: auto;
+        }
         .submissions-table th {
             text-align: left;
             padding: 10px 8px;
@@ -112,6 +134,16 @@
             font-family: 'Kucing', Arial, sans-serif;
             color: #77658c;
             font-size: 14px;
+        }
+        .submissions-table-wrap::-webkit-scrollbar {
+            width: 6px;
+        }
+        .submissions-table-wrap::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .submissions-table-wrap::-webkit-scrollbar-thumb {
+            background: #77658c;
+            border-radius: 3px;
         }
         .submissions-table td {
             padding: 10px 8px;
@@ -138,29 +170,6 @@
             color: #27ae60;
             font-weight: bold;
         }
-        .nav-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        .nav-links a {
-            font-family: 'Kucing', Arial, sans-serif;
-            font-weight: bold;
-            font-size: 18px;
-            color: #77658c;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        .nav-links a:hover {
-            color: #9b7ebd;
-        }
-        .light-mode .nav-links a {
-            color: #77658c;
-        }
-        .dark-mode .nav-links a {
-            color: #ffffff;
-        }
         .delete-btn {
             display: block;
             width: 100%;
@@ -178,14 +187,27 @@
         .delete-btn:hover {
             background: #e74c3c;
         }
-        label[for="theme-toggle"] {
-            position: absolute;
+        .theme-segment {
+            position: fixed;
             top: 10px;
             right: 10px;
+        }
+        .home-link {
+            position: fixed;
+            top: 10px;
+            left: 10px;
             font-family: 'Kucing', Arial, sans-serif;
             font-weight: bold;
+            font-size: 18px;
             color: #77658c;
-            font-size: 16px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .home-link:hover {
+            color: #9b7ebd;
+        }
+        .dark-mode .home-link {
+            color: #ffffff;
         }
         .submissions-box a {
             color: #77658c;
@@ -219,23 +241,49 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 20px;
+        }
+        .pagination button {
+            background: transparent;
+            border: 1px solid #77658c;
+            color: #77658c;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: .2s;
+        }
+        .pagination button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .pagination button:hover:not(:disabled) {
+            background: #77658c;
+            color: #fff;
+        }
+        .pagination span {
+            font-family: 'Kucing', Arial, sans-serif;
+            color: #77658c;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
-    <label for="theme-toggle">
-        <input type="checkbox" id="theme-toggle" /> Dark Mode
-    </label>
+    <a href="{% url 'home' %}" class="home-link">Home</a>
+    <div class="theme-segment" id="theme-toggle">
+        <span data-mode="dark" class="active">Dark</span>
+        <span data-mode="light">Light</span>
+    </div>
+    <div style="position: fixed; bottom: 10px; left: 10px;">
+        <a href="#" id="logout-btn" class="logout-link" style="font-family:'Kucing',Arial,sans-serif;font-weight:bold;font-size:18px;text-decoration:none;">Logout</a>
+    </div>
 
     <div class="profile-container">
-        <div class="logo-container">
-            <img src="{% static 'images/cat_lens.png' %}" alt="CiteCat Logo" class="logo"/>
-            <h1 class="logo-title">CiteCat</h1>
-        </div>
-
-        <div class="nav-links">
-            <a href="{% url 'home' %}">Home</a>
-            <a href="#" id="logout-btn" class="logout-link">Logout</a>
-        </div>
 
         <div class="tabs">
             <button class="tab-btn {% if tab == 'profile' %}active{% endif %}" onclick="switchTab('profile')">Profile</button>
@@ -268,20 +316,24 @@
 
         <div class="tab-content {% if tab == 'submissions' %}active{% endif %}" id="tab-submissions">
             <div class="submissions-box">
-                <h2>Your Submissions</h2>
                 {% if submissions %}
-                <table class="submissions-table">
+                <div class="submissions-table-wrap">
+                <table class="submissions-table" id="submissions-table">
                     <thead>
                         <tr>
+                            <th style="width:36px;"><input type="checkbox" id="select-all"></th>
+                            <th style="width:36px;">#</th>
                             <th style="min-width:80px;">Date</th>
                             <th>Input</th>
                             <th>Result</th>
                             <th>Similarity</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="submissions-body">
                         {% for s in submissions %}
                         <tr>
+                            <td style="text-align:center;"><input type="checkbox" class="sub-check" value="{{ s.id }}"></td>
+                            <td style="text-align:center;">{{ forloop.counter }}</td>
                             <td>
                                 <div>{{ s.created_at|date:"j M, Y" }}</div>
                                 <div style="font-size:12px;color:#888;margin-top:2px;">{{ s.created_at|time:"h:i A" }}</div>
@@ -307,6 +359,12 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                </div>
+                <div class="pagination">
+                    <button id="prev-page" onclick="changePage(-1)">&#9664;</button>
+                    <span id="page-info">Page 1 of 1</span>
+                    <button id="next-page" onclick="changePage(1)">&#9654;</button>
+                </div>
                 {% else %}
                     <div class="no-submissions">No submissions yet. <a href="{% url 'home' %}">Check a text</a></div>
                 {% endif %}
@@ -369,6 +427,35 @@
 
         document.getElementById('delete-modal').addEventListener('click', function(e) {
             if (e.target === this) closeDeleteModal();
+        });
+
+        const PER_PAGE = 10;
+        const rows = document.querySelectorAll('#submissions-body tr');
+        const prevBtn = document.getElementById('prev-page');
+        const nextBtn = document.getElementById('next-page');
+        const pageInfo = document.getElementById('page-info');
+        let currentPage = 1;
+        const totalPages = Math.ceil(rows.length / PER_PAGE) || 1;
+
+        function showPage(page) {
+            currentPage = Math.max(1, Math.min(page, totalPages));
+            rows.forEach((row, i) => {
+                row.style.display = (i >= (currentPage-1)*PER_PAGE && i < currentPage*PER_PAGE) ? '' : 'none';
+            });
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+            pageInfo.textContent = 'Page ' + currentPage + ' of ' + totalPages;
+        }
+
+        function changePage(delta) {
+            showPage(currentPage + delta);
+        }
+
+        if (rows.length > PER_PAGE) showPage(1);
+        else { prevBtn.disabled = true; nextBtn.disabled = true; }
+
+        document.getElementById('select-all').addEventListener('change', function() {
+            document.querySelectorAll('.sub-check').forEach(cb => cb.checked = this.checked);
         });
     </script>
 </body>
