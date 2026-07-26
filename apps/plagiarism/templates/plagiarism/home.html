@@ -210,12 +210,16 @@
 
       document.getElementById('view-data-btn').addEventListener('click', function() {
         const preview = document.getElementById('data-preview');
+        const btn = this;
         if (preview.style.display === 'block') {
           preview.style.display = 'none';
+          document.getElementById('data-preview-info').style.display = 'none';
+          btn.textContent = 'View Sample Data';
           return;
         }
         if (preview.dataset.loaded) {
           preview.style.display = 'block';
+          btn.textContent = 'Collapse Sample Data';
           return;
         }
         fetch('/static/dataset/index.json')
@@ -236,6 +240,7 @@
               infoEl.style.display = 'block';
             }
             preview.style.display = 'block';
+            btn.textContent = 'Collapse Sample Data';
           })
           .catch(function() {
             preview.textContent = 'Failed to load sample data';
