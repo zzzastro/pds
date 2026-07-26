@@ -1,6 +1,6 @@
 # CiteCat — Plagiarism Detection System
 
-A Django web application that detects plagiarism in text submissions using TF-IDF vectorization and cosine similarity. Includes a TinyBERT-based training pipeline for ML model experimentation.
+A Django web application that detects plagiarism in text submissions using TF-IDF vectorization and cosine similarity. Includes a TinyBERT-based training pipeline for ML model experimentation, and a virtual-scrolled dataset viewer for browsing the complete training corpus (367K+ text pairs) entirely in the browser.
 
 ---
 
@@ -50,6 +50,33 @@ The core detection logic lives in `apps/plagiarism/views.py`:
 
 ---
 
+## Dataset Viewer
+
+The Info modal includes two ways to explore the training dataset:
+
+### View Sample Data
+
+Shows the first 200 lines of the dataset in a scrollable box. Collapsible with toggling button text.
+
+### View Complete Dataset
+
+Opens a full-screen virtual-scrolled viewer over all **367,373 text pairs** (TSV format: `text1 \t text2 \t label`). Uses a **virtual scroller** that:
+
+- Pre-processes the dataset into 735 static JSON chunk files (500 lines each)
+- Only renders ~200 lines above and below the viewport — never more than ~600 DOM nodes
+- Fetches chunks on demand as the user scrolls, with rAF-throttled rendering
+- Shows line numbers with dim styling for reference
+- Full text available via hover tooltip; selectable for copy-paste
+- Works entirely from static files — no backend dependency
+
+Pre-generate or regenerate chunks with:
+
+```bash
+python scripts/prepare_dataset_chunks.py
+```
+
+---
+
 ## Project Structure
 
 ```
@@ -71,11 +98,25 @@ The core detection logic lives in `apps/plagiarism/views.py`:
 │       ├── views.py                 # home() — detection logic + request handling
 │       ├── models.py                # UserProfile model
 │       ├── urls.py                  # / (root)
-│       ├── static/                  # CSS, JS, images, fonts
+│       ├── static/
+│       │   ├── css/style.css        # All styles
+│       │   ├── js/script.js         # Theme toggle + logout modal
+│       │   ├── fonts/               # Custom Kucing font
+│       │   ├── images/              # Logo, favicon
+│       │   └── dataset/             # Static dataset chunks
+│       │       ├── index.json       # Chunk metadata (total_lines, chunk_size, total_chunks)
+│       │       ├── sample.json      # First 200 lines
+│       │       └── chunks/          # 735 JSON chunk files (500 lines each)
+│       │            ├── 0/          000.json – 099.json
+│       │            ├── 1/          100.json – 199.json
+│       │            └── …           (8 subdirs total, max 100 files each)
 │       └── templates/plagiarism/    # home.html
+├── scripts/
+│   └── prepare_dataset_chunks.py    # Pre-processes dataset into static JSON chunks
 ├── data/
-│   ├── raw/pds_dataset.txt          # Training/evaluation dataset (TSV)
+│   ├── raw/pds_dataset.txt          # Training/evaluation dataset (TSV, 367,373 lines)
 │   ├── preprocessed/                # Cached preprocessed texts
+│   ├── cache/                       # Serialized TF-IDF vectorizer + vectors
 │   └── test_samples/                # Sample text files for manual testing
 ├── ml/
 │   ├── train.py                     # TinyBERT training script
@@ -142,6 +183,7 @@ ALLOWED_HOSTS=localhost,127.0.0.1
 3. Log in.
 4. Paste text or upload a `.txt` file and click **Submit**.
 5. View the plagiarism verdict, similarity percentage, and source match.
+6. Click **Info** → **View Sample Data** to browse the first 200 training pairs, or **View Complete Dataset** to explore all 367K+ lines via the virtual-scrolled viewer.
 
 ---
 
